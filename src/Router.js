@@ -11,13 +11,14 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer options={{color:"black"}}>
       <Tab.Navigator>
         <Tab.Screen name="Home" component={PwGenerateScreen} 
         options={{
             tabBarLabel: "Generate Password",
             headerTitle:"Generate Password",
             headerTitleAlign:"center",
+            tabBarActiveTintColor:"black",
             tabBarIcon: () => (
               <Icon name="lock-plus" color={"black"} size={25} />
             ),
@@ -27,6 +28,7 @@ export default function App() {
             tabBarLabel: "Saved Password",
             presentation: 'transparentModal',
             headerTitle:"Saved Password",
+            tabBarActiveTintColor:"black",
             headerTitleAlign:"center",
             tabBarIcon: () => (
               <Icon name="bookmark" color={"black"} size={25} />

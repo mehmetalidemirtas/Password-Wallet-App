@@ -1,4 +1,6 @@
 {
   "name": "madsoftPasswordWallet",
-  "displayName": "madsoftPasswordWallet"
+  "displayName": "Password Wallet",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-2293112676662524~9059721156"  }
 }

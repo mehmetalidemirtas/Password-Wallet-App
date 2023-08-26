@@ -1,28 +1,109 @@
-import React from 'react';
+import React,{useEffect, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
+  TouchableOpacity,
   StatusBar,
   StyleSheet,
   Text,
+  Pressable,
+  FlatList,
+  Clipboard,
   useColorScheme,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
+const handlePress = (text) => {
+  Clipboard.setString(text);
+  console.log('Copied:', text);
+};
 const SavedScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
+  const [bank, setBank] = useState([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getBankData();
+    }, [])
+  );
+
+  const AllBankAccountRender = ({item}) => {
+    return (
+      <>
+      <View style={{padding:10, margin:5, backgroundColor:"#949494", borderRadius:10, }} >
+      <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+        <View>
+         <View style={{flexDirection:"row", alignItems:"center"}}>
+          <Text style={{color:"white", fontWeight:"bold", fontSize:16}}>
+            Platform Name: {" "} 
+          </Text>
+          <Text style={{color:"white"}}>
+            {item.value}
+          </Text>
+        </View>
+        <View style={{flexDirection:"row", alignItems:"center"}}>
+        <Text style={{color:"white", fontWeight:"bold", fontSize:16}}>
+            Password: {" "} 
+          </Text>
+          <Text style={{color:"white"}}>
+            {item.password}
+          </Text>
+        </View>
+        </View>
+        <View>
+        <Icon
+            name={"content-copy"}
+            size={25}
+            color={"white"}
+            onPress={() => handlePress(item.password)}
+          />
+          </View>
+      </View>
+      </View>
+      <View>
+      
+  </View>
+  </>
+    );
+  };
+  const getBankData = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const filterKey = `passwords_`; 
+      const bankAccountKeys = keys.filter(key => key.includes(filterKey));
+      const bankAccounts = await Promise.all(
+        bankAccountKeys.map(async key => {
+          const bankAccount = await AsyncStorage.getItem(key);
+          return JSON.parse(bankAccount);
+        }),
+      );
+      setBank(bankAccounts);
+    } catch (e) {
+      console.error('Error loading bank accounts from async storage:', e);
+    }
+  };
+  useEffect(() => {
+    getBankData();
+    return () => {};
+  }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex:1}}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic">
+      <View>
         <View>
-        <Text>Password Wallet SavedScreen</Text>
+        <FlatList
+         key={bank.length}
+            data={bank}
+            renderItem={({item}) => <AllBankAccountRender item={item} />}
+            keyExtractor={(item, index) => index.toString()}
+            />
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
